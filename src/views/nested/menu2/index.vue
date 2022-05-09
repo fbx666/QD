@@ -9,6 +9,7 @@
         <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
       </el-form-item>
       <el-button @click="register">注册</el-button>
+      <el-button @click="test">跳转测试</el-button>
     </el-form>
 
 <!--    <el-button @click="getData">{{this.result}}</el-button>-->
@@ -64,6 +65,10 @@ export default {
         this.$message({message:'操作失败！',type:'error',showClose:false});
         console.error(error);
       });
+    },
+    test(){
+      this.$router.push({ path: '/' })
+      // this.$router.push({ path: this.redirect || '/' })  两种跳转方式都可以进行路由跳转
     }
 
   }

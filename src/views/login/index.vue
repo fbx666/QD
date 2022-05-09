@@ -1,10 +1,10 @@
 <template>
   <div class="login-container">
 <!--    <el-alert title="不可关闭的 alert" type="success" :closable="false">精神病人情绪辅助系统</el-alert>-->
+<!--    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">-->
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
       <div class="title-container">
-        <h3 class="title">精神病人情绪辅助系统</h3>
+        <h3 class="title">情绪辅助系统</h3>
 <!--        <h3 class="title">Login Form</h3>-->
       </div>
 
@@ -43,7 +43,9 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+<!--      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>-->
+
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="handleLogin">登录</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">账号: admin</span>
@@ -56,6 +58,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import axios from 'axios';
 
 export default {
   name: 'Login',
@@ -76,26 +79,26 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'zhangsan',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      },
+        username: [{ required:true, trigger: 'blur', validator: validateUsername }],
+    password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+  },
       loading: false,
       passwordType: 'password',
       redirect: undefined
     }
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-      },
-      immediate: true
-    }
-  },
+  // watch: {
+  //   $route: {
+  //     handler: function(route) {
+  //       this.redirect = route.query && route.query.redirect
+  //     },
+  //     immediate: true
+  //   }
+  // },
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
@@ -122,7 +125,47 @@ export default {
           return false
         }
       })
-    }
+    },
+    login() {
+      const path = 'http://127.0.0.1:5000/login';
+      axios.post(path,
+        {name:this.loginForm.username,
+          password:this.loginForm.password},
+      ).then(res => {
+        if (res.data.msg == 1) {
+          this.$message({message: '登录成功！', type: 'success', showClose: false});
+          // this.$store.dispatch('user/login', this.loginForm).then(() => {
+          //   this.$router.push({ path: this.redirect || '/' })
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+          this.$router.push({ path:  '/' })  // 跳转
+        }
+        else if (res.data.msg == 0) {
+          this.$message({message:'用户名或密码错误！',type:'error',showClose:false});
+        }
+      }).catch(error => {
+        this.$message({message:'出现了其他错误！！！',type:'error',showClose:false});
+        console.error(error);
+      });
+    },
+    // newlogin(){
+    //     this.$refs.loginForm.validate(valid => {
+    //       if (valid) {
+    //         this.loading = true
+    //         this.$store.dispatch('user/login', this.loginForm).then(() => {
+    //           this.$router.push({ path: this.redirect || '/' })
+    //           this.loading = false
+    //         }).catch(() => {
+    //           this.loading = false
+    //         })
+    //       } else {
+    //         console.log('error submit!!')
+    //         return false
+    //       }
+    //     })
+    //   },
   }
 }
 </script>
